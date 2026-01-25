@@ -90,12 +90,6 @@ function achievements.UpdateAchievements(achv) -- ToDo: Fix this later so that i
 				SetGlobal2Int("Achv_" .. name .. "_count", tbl.completed)
 			end
 		end)
-	else
-		achievements.DataProvider:Query("SELECT COUNT(*) from daily_login", function(data) -- ToDo: Separate it from DarkRP so that it can work alone / It shouldn't rely on DarkRP
-			if istable(data) and data[1] then
-				SetGlobal2Int("Achv_Total", data[1]["COUNT(*)"] or player.GetCount())
-			end
-		end)
 	end
 end
 

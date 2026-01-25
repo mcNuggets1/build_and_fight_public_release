@@ -28,7 +28,12 @@ function PROVIDER:Query(query, func)
 end
 
 function PROVIDER:Initialize()
-	self:Query("CREATE TABLE IF NOT EXISTS achv (steamid varchar(100) NOT NULL, achievement varchar(100) NOT NULL, value INTEGER DEFAULT 0, completed NUMERIC DEFAULT FALSE, completedOn INTEGER NULL, PRIMARY KEY(steamid, achievement), KEY `IDX_ACHV_STEAMID` (`steamid`))")
+	if self:UseMySQL() then
+		self:Query("CREATE TABLE IF NOT EXISTS achv (steamid varchar(100) NOT NULL, achievement varchar(100) NOT NULL, value INTEGER DEFAULT 0, completed NUMERIC DEFAULT FALSE, completedOn INTEGER NULL, PRIMARY KEY(steamid, achievement), KEY `IDX_ACHV_STEAMID` (`steamid`))")
+	else
+		self:Query("CREATE TABLE IF NOT EXISTS achv (steamid varchar(100) NOT NULL, achievement varchar(100) NOT NULL, value INTEGER DEFAULT 0, completed NUMERIC DEFAULT FALSE, completedOn INTEGER NULL, PRIMARY KEY (steamid, achievement))")
+		self:Query("CREATE INDEX IF NOT EXISTS IDX_ACHV_STEAMID ON achv (steamid)")
+	end
 end
 
 function PROVIDER:GetPlayerAchievements(ply, callback)
