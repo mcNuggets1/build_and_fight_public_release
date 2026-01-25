@@ -40,20 +40,25 @@ local stats_unavailable
 local stats_private
 local page
 local timing = Stats.FadeIn and Stats.FadeTime or 0
+
+local function fetchPlayerTime(ply) -- YOUR TIME TRACKING FUNCTION. MEOW MF
+	return ply.GetUTimeTotalTime and ply:GetUTimeTotalTime() or 0
+end
+
 net.Receive("PVP_OpenStats", function()
 	gui.OverrideScreenClicker(true)
 	ply_info = net.ReadTable()
 	stats_private = (IsValid(Stats_Background) and ply_info.PrivateProfile == 1 and ply != LocalPlayer() and !LocalPlayer():IsAdmin())
 	stats_unavailable = (!ply_info or table.Count(ply_info) <= 0)
 	stats_loading = false
-	utime = (IsValid(Stats_Background) and (ply_info.OverrideTime or (ply and !isstring(ply) and IsValid(ply) and ply:GetUTimeTotalTime()) or 0))
+	utime = (IsValid(Stats_Background) and (ply_info.OverrideTime or (ply and !isstring(ply) and IsValid(ply) and fetchPlayerTime(ply)) or 0))
 	stats_error = ply_info.Loaded == false
 	if IsValid(Stats_Background) then return end
 	local net_ply = net.ReadEntity()
 	ply = IsValid(net_ply) and net_ply or LocalPlayer()
 	stats_private = (ply_info.PrivateProfile == 1 and ply != LocalPlayer() and !LocalPlayer():IsAdmin())
 	private = net.ReadBit()
-	utime = (ply_info.OverrideTime or (ply and !isstring(ply) and IsValid(ply) and ply:GetUTimeTotalTime()) or 0)
+	utime = (ply_info.OverrideTime or (ply and !isstring(ply) and IsValid(ply) and fetchPlayerTime(ply)) or 0)
 	page = 1
 	Stats_Background = vgui.Create("DFrame")
 	Stats_Background:SetPos(0, 0)

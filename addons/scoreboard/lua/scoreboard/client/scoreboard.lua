@@ -213,7 +213,7 @@ function PANEL:UpdatePlayerList()
 	local superadmin = local_ply:IsSuperAdmin()
 	for k=1, #plys do
 		local ply = plys[k]
-		if ply:GetMGVar("scoreboard_hide") and !superadmin and ply != local_ply then
+		if !superadmin and ply != local_ply then
 			plys[k] = nil
 			local row = self:GetPlayerRow(ply)
 			if row and row:IsValid() then
