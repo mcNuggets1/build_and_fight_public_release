@@ -1,0 +1,87 @@
+SWEP.Category = "M9K Specialties"
+SWEP.PrintName = "RPG-7"
+SWEP.DrawCrosshair = false
+SWEP.Slot = 4
+SWEP.SlotPos = 5
+SWEP.Weight = 70
+SWEP.HoldType = "rpg"
+SWEP.ViewModelFOV = 70
+SWEP.ViewModelFlip = false
+SWEP.ViewModel = "models/weapons/v_rl7.mdl"
+SWEP.WorldModel = Model("models/weapons/w_rl7.mdl")
+SWEP.Base = "mg_gun_base"
+SWEP.Spawnable = true
+SWEP.AdminSpawnable = true
+SWEP.Primary.Sound = Sound("RPGF.single")
+SWEP.Primary.RPM = 100
+SWEP.Primary.ClipSize = 1
+SWEP.Primary.DefaultClip = 1
+SWEP.Primary.Automatic = false
+SWEP.Primary.Ammo = "rpg7_round"
+SWEP.Primary.Round = "m9k_gdcwa_rpg_heat"
+SWEP.Secondary.SightsFOV = 40
+SWEP.CanAim = false
+SWEP.SightsPos = Vector(-3.7384, -5.7481, -0.2713)
+SWEP.SightsAng = Vector(1.1426, 0.0675, 0)
+SWEP.RunSightsPos = Vector(2.4946, -1.5644, 1.699)
+SWEP.RunSightsAng = Vector(-20.1104, 35.1164, -12.959)
+SWEP.WeaponType = "rpg"
+
+function SWEP:AddDeploy()
+	if SERVER then
+		self:CheckWeaponsAndAmmo(0)
+	end
+end
+
+function SWEP:PrimaryAttack()
+	if self:GetLowered() then return end
+	if self:CanPrimaryAttack() and !self:GetRunning() and !self:GetPredictedRunning() and !self:GetReloading() then
+		if !self.FiresUnderWater then
+			if self.Owner:WaterLevel() > 2 then
+				return
+			end
+		end
+		self:EmitSound(self.Primary.Sound)
+		self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
+		self.Owner:SetAnimation(PLAYER_ATTACK1)
+		self.Owner:MuzzleFlash()
+		self:TakePrimaryAmmo(1)
+		self:SetNextPrimaryFire(CurTime() + 1 / (self.Primary.RPM / 60))
+		self.Owner:ViewPunch(Angle(-2, util.SharedRandom(self:GetClass(), -0.4, 0.4, 0), 0))
+		if SERVER then
+			self:FireGrenade()
+			self:CheckWeaponsAndAmmo(self:SequenceDuration() * 0.25)
+		end
+	end
+end
+
+function SWEP:FireGrenade()
+	local aim = self.Owner:EyeAngles():Forward()
+	local side = aim:Cross(Vector(0, 0, 1))
+	local up = side:Cross(aim)
+	local pos = self.Owner:GetShootPos() + side * 6 + up * -5
+	local grenade = ents.Create(self.Primary.Round)
+	if !IsValid(grenade) then return end
+	grenade:SetAngles(aim:Angle())
+	grenade:SetPos(pos)
+	grenade:SetOwner(self.Owner)
+	grenade:Spawn()
+	grenade:Activate()
+end
+
+function SWEP:CheckWeaponsAndAmmo(Wait)
+	if (self:Clip1() <= 0 and self.Owner:GetAmmoCount(self:GetPrimaryAmmoType()) <= 0) then
+		timer.Simple(Wait, function()
+			if !IsValid(self) then return end
+			MG_RemoveWeapon(self)
+		end)
+	end
+end
+
+if !ConVarExists("mg_m9k_defaultclip") then
+	print("mg_m9k_defaultclip ConVar was not set up properly!")
+else
+	if GetConVar("mg_m9k_defaultclip"):GetInt() != -1 then
+		SWEP.Primary.DefaultClip = SWEP.Primary.ClipSize * GetConVar("mg_m9k_defaultclip"):GetInt()
+	end
+end

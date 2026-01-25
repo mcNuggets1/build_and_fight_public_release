@@ -1,0 +1,9 @@
+ENT.Type = "anim"
+ENT.Base = "drug_base"
+ENT.PrintName = "Wasser"
+ENT.Category = "Drogen"
+ENT.Spawnable = true
+ENT.AdminSpawnable = true
+ENT.EFFECT_TEXT = "Beendet Rausch"
+ENT.IsLegal = true
+ENT.IsDeadly = false

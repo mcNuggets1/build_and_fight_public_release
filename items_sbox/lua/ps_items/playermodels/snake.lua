@@ -1,0 +1,12 @@
+ITEM.Name = 'Solid Snake'
+ITEM.Price = 140000
+ITEM.Model = 'models/player/old_snake.mdl'
+ITEM.PlayerModel = true
+
+function ITEM:OnEquip(ply, modifications)
+	PS_GivePlayerModel(ply, self.Model, modifications)
+end
+
+function ITEM:OnHolster(ply)
+	PS_RemovePlayerModel(ply)
+end
