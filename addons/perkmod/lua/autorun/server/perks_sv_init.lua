@@ -52,7 +52,7 @@ function Player:Perks_GetData()
 	Query("SELECT * FROM perkmod WHERE steamid = '"..sid.."'", function(data)
 		if !IsValid(self) then return end
 		self.PerkMod_Initialised = true
-		if !data then
+		if !data or data == "NULL" then
 			Query("INSERT INTO perkmod (steamid, xp, level, prestige, ap) VALUES ('"..sid.."', 0, 1, 0, 1)")
 			self:SetPerkVar("XP", 0)
 			self:SetPerkVar("Level", 1)
