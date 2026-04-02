@@ -11,7 +11,7 @@ resource.AddWorkshop(2000336248)
 resource.AddWorkshop(2191160156)
 
 -- Modelle
-resource.AddWorkshop(2188617219)
+--resource.AddWorkshop(2188617219) -- Currently offline
 
 -- VCMod
 resource.AddWorkshop(632470227)
