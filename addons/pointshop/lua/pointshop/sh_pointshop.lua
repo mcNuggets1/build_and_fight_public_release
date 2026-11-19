@@ -97,7 +97,8 @@ function PS:LoadItems()
 							if status == -1 then
 								broken = true
 							else
-								print("[PS Items] Failed to load ps_items/"..category.."/"..name, "Error: " .. status)
+								print("[PS Items] Failed to load ps_items/"..category.."/"..name, "Error: " .. tostring(status))
+								query = query - 1
 								return
 							end
 
